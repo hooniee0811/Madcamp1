@@ -21,19 +21,21 @@ import AntIcon from 'react-native-vector-icons/AntDesign';
 import RNFS from 'react-native-fs';
 import GroupSelectModal from '../components/GroupSelectModal';
 
-type Props = StackScreenProps<ContactsStackParamList, 'AddContact'>;
+type Props = StackScreenProps<ContactsStackParamList, 'EditContact'>;
 
-const AddContactScreen = () => {
+const EditContactScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
   const route = useRoute<Props['route']>();
+  const oldContact = route.params.contacts;
+  const index = route.params.index;
 
   const [newContact, setNewContact] = useState<Contact>({
-    id: uuid.v4(),
-    name: '',
-    phoneNumber: '',
-    group: 'None',
-    email: '',
-    memo: '',
+    id: oldContact[index].id,
+    name: oldContact[index].name,
+    phoneNumber: oldContact[index].phoneNumber,
+    group: oldContact[index].group,
+    email: oldContact[index].email,
+    memo: oldContact[index].memo,
   });
   const [modalVisible, setModalVisible] = useState<boolean>(false);
 
@@ -73,11 +75,13 @@ const AddContactScreen = () => {
     setNewContact(cp);
   };
 
+  console.log(RNFS.DocumentDirectoryPath + '/contacts.json');
+
   const saveContact = () => {
     const cp = [...route.params.contacts];
     const filePath = RNFS.DocumentDirectoryPath + '/contacts.json';
 
-    cp.push(newContact);
+    cp.splice(route.params.index, 1, newContact);
     cp.sort((a, b) => a.name.localeCompare(b.name));
 
     route.params.setContacts(cp);
@@ -155,7 +159,7 @@ const AddContactScreen = () => {
           <AntIcon name="caretdown" color="#7A7A7A" size={16} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.createBtn} onPress={saveContact}>
-          <Text style={styles.saveText}>Save</Text>
+          <Text style={styles.createText}>Save</Text>
         </TouchableOpacity>
       </ScrollView>
       <GroupSelectModal
@@ -186,7 +190,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     flexDirection: 'row',
     width: 340,
-    paddingHorizontal: 16,
+    paddingLeft: 16,
     borderRadius: 12,
     backgroundColor: '#F5F7FE',
     flexWrap: 'wrap',
@@ -215,7 +219,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#5878E8',
     alignItems: 'center',
   },
-  saveText: {
+  createText: {
     color: 'white',
     fontFamily: 'Pretendard',
     fontSize: 24,
@@ -223,4 +227,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddContactScreen;
+export default EditContactScreen;

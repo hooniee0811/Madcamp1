@@ -1,12 +1,26 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import ContactListScreen from '../screens/ContactListScreen';
+import ContactListScreen, {Contact} from '../screens/ContactListScreen';
 import ContactDetailScreen from '../screens/ContactDetailScreen';
+import EditContactScreen from '../screens/EditContactScreen';
+import AddContactScreen from '../screens/AddContactScreen';
 
 export type ContactsStackParamList = {
   ContactList: undefined;
-  ContactDetail: {index: number};
-  AddContact: undefined;
+  ContactDetail: {
+    contacts: Contact[];
+    setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
+    index: number;
+  };
+  AddContact: {
+    contacts: Contact[];
+    setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
+  };
+  EditContact: {
+    contacts: Contact[];
+    setContacts: React.Dispatch<React.SetStateAction<Contact[]>>;
+    index: number;
+  };
 };
 
 const Stack = createStackNavigator<ContactsStackParamList>();
@@ -26,7 +40,12 @@ const ContactsStackNavigator = () => {
       />
       <Stack.Screen
         name="AddContact"
-        component={ContactDetailScreen}
+        component={AddContactScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="EditContact"
+        component={EditContactScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

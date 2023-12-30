@@ -22,6 +22,7 @@ const BottomTabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {backgroundColor: '#F5F7FE', borderColor: '#F5F7FE'},
+        tabBarHideOnKeyboard: true,
       }}>
       <Tab.Screen
         name="Contacts"
