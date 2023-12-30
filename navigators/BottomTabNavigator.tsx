@@ -1,10 +1,11 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import ContactsScreen from '../screens/ContactsScreen';
+import ContactsScreen from '../screens/ContactListScreen';
 import PictureScreen from '../screens/PictureScreen';
 import Tab3Screen from '../screens/Tab3Screen';
 import Icon from 'react-native-vector-icons/AntDesign';
 import {StyleSheet, Text, View} from 'react-native';
+import ContactsStackNavigator from './ContactsStackNavigator';
 
 export type BottomTabParamList = {
   Contacts: undefined;
@@ -16,10 +17,15 @@ const Tab = createBottomTabNavigator<BottomTabParamList>();
 
 const BottomTabNavigator = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      initialRouteName="Contacts"
+      screenOptions={{
+        headerShown: false,
+        tabBarStyle: {backgroundColor: '#F5F7FE', borderColor: '#F5F7FE'},
+      }}>
       <Tab.Screen
         name="Contacts"
-        component={ContactsScreen}
+        component={ContactsStackNavigator}
         options={{
           tabBarIcon: ({size, focused}) => (
             <View style={focused ? styles.focusedContainer : styles.container}>
@@ -35,6 +41,7 @@ const BottomTabNavigator = () => {
               Contacts
             </Text>
           ),
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -57,7 +64,10 @@ const BottomTabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen name="Tab3" component={Tab3Screen} options={{
+      <Tab.Screen
+        name="Tab3"
+        component={Tab3Screen}
+        options={{
           tabBarIcon: ({size, focused}) => (
             <View style={focused ? styles.focusedContainer : styles.container}>
               <Icon
@@ -72,7 +82,8 @@ const BottomTabNavigator = () => {
               Tab3
             </Text>
           ),
-        }}/>
+        }}
+      />
     </Tab.Navigator>
   );
 };

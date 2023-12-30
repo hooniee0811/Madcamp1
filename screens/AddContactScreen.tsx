@@ -1,8 +1,8 @@
 import React from 'react';
 import {View} from 'react-native';
 
-const ContactsScreen = () => {
+const AddContactScreen = () => {
   return <View></View>;
 };
 
-export default ContactsScreen;
+export default AddContactScreen;
