@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {
+  NativeSyntheticEvent,
   PermissionsAndroid,
   ScrollView,
   StyleSheet,
   Text,
+  TextInputChangeEventData,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -34,6 +36,7 @@ const ContactListScreen = () => {
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>('');
+  const [searchedContacts, setSearchedContacts] = useState<Contact[]>([]);
 
   const filePath = RNFS.DocumentDirectoryPath + '/contacts.json';
 
@@ -48,6 +51,26 @@ const ContactListScreen = () => {
     //   });
   }, []);
 
+  useEffect(() => {
+    console.log(searchTitle);
+    const searched = contacts
+      .filter(contact => contact.name.includes(searchTitle))
+      .sort((a, b) => {
+        const indexA = a.name.indexOf(searchTitle);
+        const indexB = b.name.indexOf(searchTitle);
+
+        return indexA - indexB;
+      });
+    setSearchedContacts(searched);
+    console.log(searchedContacts);
+  }, [searchTitle]);
+
+  const onChagneSearchTitle = (
+    evt: NativeSyntheticEvent<TextInputChangeEventData>,
+  ) => {
+    setSearchTitle(evt.nativeEvent.text);
+  };
+
   const addContact = () => {
     navigation.navigate('AddContact', {
       contacts: contacts,
@@ -56,11 +79,22 @@ const ContactListScreen = () => {
   };
 
   const showContactDetail = (index: number) => () => {
-    navigation.navigate('ContactDetail', {
-      contacts: contacts,
-      setContacts: setContacts,
-      index: index,
-    });
+    if (searchTitle == '') {
+      navigation.navigate('ContactDetail', {
+        contacts: contacts,
+        setContacts: setContacts,
+        index: index,
+      });
+    } else {
+      const realIndex = contacts.findIndex(
+        contact => contact.id === searchedContacts[index].id,
+      );
+      navigation.navigate('ContactDetail', {
+        contacts: contacts,
+        setContacts: setContacts,
+        index: realIndex,
+      });
+    }
   };
 
   const readContacts = async () => {
@@ -76,7 +110,6 @@ const ContactListScreen = () => {
       const fileContent = await RNFS.readFile(filePath, 'utf8');
       const contactData = JSON.parse(fileContent);
       setContacts(contactData);
-      console.log(contactData);
     } catch (error) {
       console.log(error);
     }
@@ -94,31 +127,55 @@ const ContactListScreen = () => {
             placeholder="Search"
             placeholderTextColor={'#C9C9C9'}
             value={searchTitle}
+            onChange={onChagneSearchTitle}
             multiline={true}
           />
         </View>
       </View>
       <ScrollView>
-        {contacts.map((contact, index) => {
-          return (
-            <TouchableOpacity
-              key={contact.id}
-              style={styles.contactContainer}
-              onPress={showContactDetail(index)}>
-              <View style={styles.userIconContainer}>
-                <Text style={styles.firstName}>{contact.name[0]}</Text>
-              </View>
-              <Text
-                style={
-                  index != contacts.length - 1
-                    ? styles.nameTextWithLine
-                    : styles.nameText
-                }>
-                {contact.name}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
+        {searchTitle == ''
+          ? contacts.map((contact, index) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.contactContainer}
+                  onPress={showContactDetail(index)}>
+                  <View style={styles.userIconContainer}>
+                    <Text style={styles.firstName}>{contact.name[0]}</Text>
+                  </View>
+                  <Text
+                    style={
+                      index != contacts.length - 1
+                        ? styles.nameTextWithLine
+                        : styles.nameText
+                    }>
+                    {contact.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })
+          : searchedContacts.map((searchedContact, index) => {
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.contactContainer}
+                  onPress={showContactDetail(index)}>
+                  <View style={styles.userIconContainer}>
+                    <Text style={styles.firstName}>
+                      {searchedContact.name[0]}
+                    </Text>
+                  </View>
+                  <Text
+                    style={
+                      index != searchedContacts.length - 1
+                        ? styles.nameTextWithLine
+                        : styles.nameText
+                    }>
+                    {searchedContact.name}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
       </ScrollView>
       <TouchableOpacity style={styles.addUserContainer} onPress={addContact}>
         <AntIcon name="adduser" size={28} color="white" />
@@ -136,12 +193,10 @@ const styles = StyleSheet.create({
   },
   topBar: {
     flexDirection: 'row',
-    gap: 8,
-    alignItems: 'center',
   },
   searchBox: {
-    flex: 1,
     flexDirection: 'row',
+    flex: 1,
     height: 40,
     backgroundColor: '#F5F7FE',
     borderRadius: 20,
@@ -199,7 +254,7 @@ const styles = StyleSheet.create({
     height: '100%',
     textAlignVertical: 'center',
     borderBottomWidth: 0.5,
-    borderBottomColor: '#7A7A7A',
+    borderBottomColor: '#C9C9C9',
     paddingVertical: 16,
   },
   nameText: {
