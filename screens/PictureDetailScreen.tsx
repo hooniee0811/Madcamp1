@@ -17,6 +17,18 @@ const PictureDetailScreen = ({route}) => {
     navigation.goBack();
   };
 
+  const deletePicture = () => {
+    // route.params.idx를 사용하여 현재 화면에서 보여지고 있는 이미지의 idx를 가져옵니다.
+    const idxToRemove = route.params.idx;
+
+    // PictureListScreen에 있는 removeImage 함수를 호출하여 이미지를 삭제합니다.
+    const removeImage = route.params.removeImage;
+    removeImage(idxToRemove);
+
+    // 이미지 삭제 후 이전 화면으로 돌아갑니다.
+    goBack();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -27,7 +39,7 @@ const PictureDetailScreen = ({route}) => {
           <TouchableOpacity>
             <FeaIcon name="edit" size={20} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={deletePicture}>
             <FeaIcon name="trash-2" size={20} color="black" />
           </TouchableOpacity>
         </View>
