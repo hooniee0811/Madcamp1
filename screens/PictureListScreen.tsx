@@ -15,6 +15,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import {PictureStackParamList} from '../navigators/PictureStackNavigator';
 import picturesData from '../src/pictures.json';
 import AntIcon from 'react-native-vector-icons/AntDesign';
+import FonIcon from 'react-native-vector-icons/Fontisto';
 
 type Props = StackPictureProps<PictureStackParamList, 'PictureList'>;
 
@@ -36,8 +37,8 @@ const PictureListScreen = () => {
   const numColumns = 3;
   const thumbnailSize = (containerWidth - margin) / numColumns;
 
-  const pictureCamera = () => {
-    navigation.navigate('PictureCamera');
+  const pictureGallery = () => {
+    navigation.navigate('PictureGallery');
   };
   const removeImage = idxToRemove => {
     const updatedImageArr = imageArr.filter(item => item.idx !== idxToRemove);
@@ -71,6 +72,7 @@ const PictureListScreen = () => {
             src: item.src,
             count: imageArr.length,
             idx: item.idx,
+            imageArr: imageArr,
             removeImage: removeImage,
           })
         }
@@ -102,9 +104,9 @@ const PictureListScreen = () => {
         renderItem={({item}) => <Item item={item} />}
         numColumns={numColumns}
       />
-      {/* <TouchableOpacity style={styles.camera} onPress={pictureCamera}>
-        <AntIcon name="camera" size={30} color="black" />
-      </TouchableOpacity> */}
+      <TouchableOpacity style={styles.gallery} onPress={pictureGallery}>
+        <FonIcon name="photograph" size={30} color="black" />
+      </TouchableOpacity>
       <Text style={styles.pictureCount}>{imageArr.length}장의 사진</Text>
     </View>
   );
@@ -117,9 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   imageArr: {
-    // backgroundColor: 'skyblue',
     width: '100%',
-    // marginHorizontal: '5%',
     marginVertical: '5%',
   },
   imageThumbnailContainer: {
@@ -139,8 +139,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
   },
-  camera: {
-    justifyContent: 'flex-end',
+  gallery: {
+    justifyContent: 'flex-start',
   },
 });
 

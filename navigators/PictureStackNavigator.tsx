@@ -2,14 +2,12 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import PictureListScreen from '../screens/PictureListScreen';
 import PictureDetailScreen from '../screens/PictureDetailScreen';
-import PictureDeleteScreen from '../screens/PictureDeleteScreen';
-import PictureCameraScreen from '../screens/PictureCameraScreen';
+import PictureGalleryScreen from '../screens/PictureGalleryScreen';
 
 export type PictureStackParamList = {
   PictureList: undefined;
   PictureDetail: undefined;
-  PictureDelete: undefined;
-  PictureCamera: undefined;
+  PictureGallery: undefined;
 };
 
 const Stack = createStackNavigator<PictureStackParamList>();
@@ -27,8 +25,8 @@ const PictureStackNavigator = () => (
       options={{headerShown: false}}
     />
     <Stack.Screen
-      name="PictureDelete"
-      component={PictureDeleteScreen}
+      name="PictureGallery"
+      component={PictureGalleryScreen}
       options={{headerShown: false}}
     />
   </Stack.Navigator>

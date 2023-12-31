@@ -1,12 +1,12 @@
 import React from 'react';
 import {Text, View} from 'react-native';
 
-const PictureCameraScreen = () => {
+const PictureGalleryScreen = () => {
   return (
     <View>
-      <Text>삭제</Text>
+      <Text>Gallery</Text>
     </View>
   );
 };
 
-export default PictureCameraScreen;
+export default PictureGalleryScreen;
