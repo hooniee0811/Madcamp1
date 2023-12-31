@@ -16,10 +16,18 @@ import {PictureStackParamList} from '../navigators/PictureStackNavigator';
 import picturesData from '../src/pictures.json';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FonIcon from 'react-native-vector-icons/Fontisto';
+import EntIcon from 'react-native-vector-icons/Entypo';
+import ImagePicker from 'react-native-image-picker'; // image-picker 라이브러리 추가
+import RNFS from 'react-native-fs'; // react-native-fs 라이브러리 추가
+import {writeFile, DocumentDirectoryPath} from 'react-native-fs';
 
-type Props = StackPictureProps<PictureStackParamList, 'PictureList'>;
+// type Props = StackPictureProps<PictureStackParamList, 'PictureList'>;
 
-const PictureListScreen = () => {
+type PictureListProps = {
+  route: any;
+};
+
+const PictureListScreen = ({route}) => {
   const navigation = useNavigation<Props['navigation']>();
 
   const [containerWidth, setContainerWidth] = useState(0);
@@ -30,16 +38,52 @@ const PictureListScreen = () => {
     {idx: '3', src: require('../assets/img3.png')},
     {idx: '4', src: require('../assets/img4.png')},
     {idx: '5', src: require('../assets/img5.png')},
+    {
+      idx: '6',
+      src: 'file:///data/user/0/com.madcamp1/cache/rn_image_picker_lib_temp_4b3306f9-1ab2-4a6f-b7c2-37c0eedaf091.jpg',
+    },
   ]);
+  useEffect(() => {
+    // route에서 selectedImage를 가져와서 이미지 배열에 추가
+    const selectedImage = route.params?.selectedImage;
+    if (selectedImage) {
+      // 이미지를 로컬 파일로 저장
+      const saveImageToLocalFile = async () => {
+        try {
+          const imagePath = `${DocumentDirectoryPath}/${Date.now()}.jpg`;
+
+          // 이미지를 로컬 파일로 저장
+          await RNFS.moveFile(selectedImage, imagePath);
+
+          // 이미지 배열을 복제하여 업데이트
+          setImageArr(prevImageArr => [
+            ...prevImageArr,
+            {idx: String(prevImageArr.length + 1), src: imagePath},
+          ]);
+
+          console.log('이미지가 로컬 파일로 저장되었습니다:', imagePath);
+        } catch (error) {
+          console.error('이미지 저장 실패:', error);
+        }
+      };
+
+      saveImageToLocalFile();
+    }
+  }, [route.params?.selectedImage]);
 
   const margin = 0; // 비율에 맞도록 수정하기
   // const margin = styles.imageThumbnailContainer.margin * 2;
   const numColumns = 3;
   const thumbnailSize = (containerWidth - margin) / numColumns;
-
+  //pictureGalleryScreen으로 이동
   const pictureGallery = () => {
     navigation.navigate('PictureGallery');
   };
+  //pictureCameraScreen으로 이동
+  const PictureCamera = () => {
+    navigation.navigate('PictureCamera');
+  };
+
   const removeImage = idxToRemove => {
     const updatedImageArr = imageArr.filter(item => item.idx !== idxToRemove);
     setImageArr(updatedImageArr);
@@ -104,8 +148,11 @@ const PictureListScreen = () => {
         renderItem={({item}) => <Item item={item} />}
         numColumns={numColumns}
       />
-      <TouchableOpacity style={styles.gallery} onPress={pictureGallery}>
-        <FonIcon name="photograph" size={30} color="black" />
+      <TouchableOpacity style={styles.plus} onPress={pictureGallery}>
+        <EntIcon name="plus" size={30} color="white" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.camera} onPress={PictureCamera}>
+        <Text>카메라</Text>
       </TouchableOpacity>
       <Text style={styles.pictureCount}>{imageArr.length}장의 사진</Text>
     </View>
@@ -139,8 +186,28 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#000000',
   },
-  gallery: {
-    justifyContent: 'flex-start',
+  plus: {
+    position: 'absolute',
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    right: 16,
+    bottom: 16,
+    backgroundColor: '#5878E8',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  camera: {
+    position: 'absolute',
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    right: 16,
+    bottom: 16,
+    backgroundColor: '#5878E8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginEnd: 100,
   },
 });
 

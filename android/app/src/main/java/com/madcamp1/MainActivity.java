@@ -35,12 +35,4 @@ public class MainActivity extends ReactActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(null);
   }
-  //이미지 가져오는 것 때문에 추가
-//   @Override
-// protected List<ReactPackage> getPackages() {
-//   return Arrays.<ReactPackage>asList(
-//     // ... 다른 패키지들 ...
-//     new ImagePickerPackage()  // 여기에 추가
-//   );
-// }
 }
