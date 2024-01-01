@@ -146,17 +146,11 @@ const PictureListScreen = ({route}) => {
   const [imageSource, setImageSource] = useState<string>('');
 
   const options = {
-    title: 'Load Photo',
-    customButtons: [
-      {name: 'button_id_1', title: 'CustomButton 1'},
-      {name: 'button_id_2', title: 'CustomButton 2'},
-    ],
     storageOptions: {
       skipBackup: true,
       path: 'images',
     },
   };
-
   const showImagePicker = (): void => {
     launchImageLibrary(options, response => {
       console.log('Response = ', response);
@@ -169,8 +163,18 @@ const PictureListScreen = ({route}) => {
         console.log('User tapped custom button: ', response.customButton);
         Alert.alert(response.customButton);
       } else {
-        //이미지 소스 설정
+        //이미지 배열에 추가
+        setImageArr(prevImageArr => [
+          ...prevImageArr,
+          {
+            idx: String(prevImageArr.length + 1),
+            src: {uri: response.assets[0].uri},
+          },
+        ]);
+        //imageArr 출력하기. 이거 적으니까 됨;; 왜지
+        console.log(imageArr[0]);
 
+        //이미지 소스 설정
         setImageSource(response.assets[0].uri);
         console.log('이미지 소스가 설정되었습니다:', response.assets[0].uri);
       }
@@ -182,6 +186,17 @@ const PictureListScreen = ({route}) => {
       if (response.error) {
         console.log('LaunchCamera Error: ', response.error);
       } else {
+        //이미지 배열에 추가
+        setImageArr(prevImageArr => [
+          ...prevImageArr,
+          {
+            idx: String(prevImageArr.length + 1),
+            src: {uri: response.assets[0].uri},
+          },
+        ]);
+        //imageArr 출력하기. 이거 적으니까 됨;; 왜지
+        console.log(imageArr[1]);
+        //이미지 소스 설정
         setImageSource(response.assets[0].uri);
       }
     });
