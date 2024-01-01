@@ -9,6 +9,7 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 ``;
 import {FlatList} from 'react-native-gesture-handler';
@@ -16,11 +17,15 @@ import {PictureStackParamList} from '../navigators/PictureStackNavigator';
 import picturesData from '../src/pictures.json';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FonIcon from 'react-native-vector-icons/Fontisto';
+import FonAweIcon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
+import MatIcon from 'react-native-vector-icons/MaterialIcons';
 import ImagePicker from 'react-native-image-picker'; // image-picker 라이브러리 추가
+
 import RNFS from 'react-native-fs'; // react-native-fs 라이브러리 추가
 import {writeFile, DocumentDirectoryPath} from 'react-native-fs';
-
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
+import {openCamera} from './PictureCameraScreen';
 // type Props = StackPictureProps<PictureStackParamList, 'PictureList'>;
 
 type PictureListProps = {
@@ -38,11 +43,8 @@ const PictureListScreen = ({route}) => {
     {idx: '3', src: require('../assets/img3.png')},
     {idx: '4', src: require('../assets/img4.png')},
     {idx: '5', src: require('../assets/img5.png')},
-    {
-      idx: '6',
-      src: 'file:///data/user/0/com.madcamp1/cache/rn_image_picker_lib_temp_4b3306f9-1ab2-4a6f-b7c2-37c0eedaf091.jpg',
-    },
   ]);
+
   useEffect(() => {
     // route에서 selectedImage를 가져와서 이미지 배열에 추가
     const selectedImage = route.params?.selectedImage;
@@ -148,13 +150,15 @@ const PictureListScreen = ({route}) => {
         renderItem={({item}) => <Item item={item} />}
         numColumns={numColumns}
       />
-      <TouchableOpacity style={styles.plus} onPress={pictureGallery}>
-        <EntIcon name="plus" size={30} color="white" />
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.camera} onPress={PictureCamera}>
-        <Text>카메라</Text>
-      </TouchableOpacity>
       <Text style={styles.pictureCount}>{imageArr.length}장의 사진</Text>
+      <TouchableOpacity style={styles.camera} onPress={PictureCamera}>
+        <AntIcon name="camera" size={25} color="#737373" />
+        <Text>카메라로 촬영하기</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.gallery} onPress={pictureGallery}>
+        <MatIcon name="insert-photo" size={25} color="#737373" />
+        <Text>앨범에서 가져오기</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -164,6 +168,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
+    backgroundColor: '#ffffff',
   },
   imageArr: {
     width: '100%',
@@ -181,33 +186,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     resizeMode: 'cover', //w, h에 맞게 사진 크기 조절
   },
-  pictureCount: {
-    marginBottom: 10,
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-  plus: {
+  gallery: {
+    flexDirection: 'row',
     position: 'absolute',
     height: 60,
-    width: 60,
-    borderRadius: 30,
+    width: '45%',
     right: 16,
-    bottom: 16,
-    backgroundColor: '#5878E8',
+    bottom: 20,
+    backgroundColor: '#F5F7FE',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    padding: 20,
+    elevation: 1,
+    borderRadius: 10,
   },
   camera: {
+    flexDirection: 'row',
     position: 'absolute',
     height: 60,
-    width: 60,
-    borderRadius: 30,
-    right: 16,
-    bottom: 16,
-    backgroundColor: '#5878E8',
+    width: '45%',
+    left: 16,
+    bottom: 20,
+    backgroundColor: '#F5F7FE',
     alignItems: 'center',
-    justifyContent: 'center',
-    marginEnd: 100,
+    justifyContent: 'space-between',
+    padding: 20,
+    elevation: 1,
+    borderRadius: 10,
+  },
+  pictureCount: {
+    marginBottom: 90,
+    color: '#737373',
   },
 });
 

@@ -23,5 +23,8 @@ buildscript {
         
 
         classpath("com.facebook.react:react-native-gradle-plugin")
+
+        //react-native camera
+          classpath 'com.google.android.gms:strict-version-matcher-plugin:1.2.1'
     }
 }

@@ -9,6 +9,7 @@ import {
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import Camera from 'react-native-camera';
 import RNFS from 'react-native-fs';
+import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 
 const PictureCameraScreen = ({navigation}) => {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -92,7 +93,7 @@ const PictureCameraScreen = ({navigation}) => {
       <TouchableOpacity onPress={openCamera}>
         <Text>Take a Photo</Text>
       </TouchableOpacity>
-
+      {/* 
       {selectedImage && (
         <View style={{marginTop: 20}}>
           <Image
@@ -100,7 +101,9 @@ const PictureCameraScreen = ({navigation}) => {
             style={{width: 200, height: 200}}
           />
         </View>
-      )}
+      )} */}
+
+      <View></View>
     </View>
   );
 };
