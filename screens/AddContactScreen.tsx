@@ -77,20 +77,26 @@ const AddContactScreen = () => {
     const cp = [...route.params.contacts];
     const filePath = RNFS.DocumentDirectoryPath + '/contacts.json';
 
-    cp.push(newContact);
-    cp.sort((a, b) => a.name.localeCompare(b.name));
+    if (newContact.name === '') {
+      Alert.alert('Please enter the name!');
+    } else if (newContact.phoneNumber === '') {
+      Alert.alert('Please enter the phone number!');
+    } else {
+      cp.push(newContact);
+      cp.sort((a, b) => a.name.localeCompare(b.name));
 
-    route.params.setContacts(cp);
+      route.params.setContacts(cp);
 
-    RNFS.writeFile(filePath, JSON.stringify(cp), 'utf8')
-      .then(success => {
-        console.log('File written successfully');
-      })
-      .catch(error => {
-        console.error('Error');
-      });
+      RNFS.writeFile(filePath, JSON.stringify(cp), 'utf8')
+        .then(success => {
+          console.log('File written successfully');
+        })
+        .catch(error => {
+          console.error('Error');
+        });
 
-    navigation.popToTop();
+      navigation.popToTop();
+    }
   };
 
   return (
