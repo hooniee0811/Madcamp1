@@ -183,13 +183,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     paddingHorizontal: 8,
-    paddingTop: 12,
+    paddingTop: 8,
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: 8,
   },
   backBtn: {
     width: 40,

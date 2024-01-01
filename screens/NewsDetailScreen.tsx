@@ -46,8 +46,12 @@ const NewsDetailScreen = () => {
           <IonIcon name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
       </View>
-      <ScrollView style={styles.scrollView}>
-        <Text style={styles.categoryText}>{categories[category]}</Text>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={{flexGrow: 1}}>
+        {category !== '' && (
+          <Text style={styles.categoryText}>{categories[category]}</Text>
+        )}
         <Text style={styles.title}>{article.title}</Text>
         <Text style={styles.smallText}>
           Published At: {format(article.publishedAt, 'yyyy.MM.dd HH:mm')}
@@ -57,7 +61,7 @@ const NewsDetailScreen = () => {
         )}
         <Text style={styles.descText}>{article.description}</Text>
         <Text style={styles.smallText}>Author: {article.author}</Text>
-        <TouchableOpacity onPress={onOpenLink}>
+        <TouchableOpacity onPress={onOpenLink} style={{marginBottom: 70}}>
           <Text style={styles.linkText}>Read More</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -70,13 +74,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     paddingHorizontal: 8,
-    paddingTop: 12,
+    paddingTop: 8,
   },
   topBar: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    paddingHorizontal: 8,
   },
   backBtn: {
     width: 40,
