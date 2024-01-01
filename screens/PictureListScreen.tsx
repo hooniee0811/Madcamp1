@@ -20,12 +20,15 @@ import FonIcon from 'react-native-vector-icons/Fontisto';
 import FonAweIcon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
-import ImagePicker from 'react-native-image-picker'; // image-picker 라이브러리 추가
 
 import RNFS from 'react-native-fs'; // react-native-fs 라이브러리 추가
 import {writeFile, DocumentDirectoryPath} from 'react-native-fs';
 import {CameraRoll} from '@react-native-camera-roll/camera-roll';
 import {openCamera} from './PictureCameraScreen';
+import ImagePicker, {
+  launchImageLibrary,
+  launchCamera,
+} from 'react-native-image-picker';
 // type Props = StackPictureProps<PictureStackParamList, 'PictureList'>;
 
 type PictureListProps = {
@@ -63,7 +66,7 @@ const PictureListScreen = ({route}) => {
             {idx: String(prevImageArr.length + 1), src: imagePath},
           ]);
 
-          console.log('이미지가 로컬 파일로 저장되었습니다:', imagePath);
+          console.log('이미지가 로컬 파일로 저장되었습니다:', imagePath); //이미지가 로컬 파일로 저장되었습니다: /data/user/0/com.madcamp1/files/1704073823245.jpg
         } catch (error) {
           console.error('이미지 저장 실패:', error);
         }
@@ -139,6 +142,50 @@ const PictureListScreen = ({route}) => {
       </TouchableHighlight>
     );
   };
+  //갤러리 접근 및 사진 촬영
+  const [imageSource, setImageSource] = useState<string>('');
+
+  const options = {
+    title: 'Load Photo',
+    customButtons: [
+      {name: 'button_id_1', title: 'CustomButton 1'},
+      {name: 'button_id_2', title: 'CustomButton 2'},
+    ],
+    storageOptions: {
+      skipBackup: true,
+      path: 'images',
+    },
+  };
+
+  const showImagePicker = (): void => {
+    launchImageLibrary(options, response => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        Alert.alert(response.customButton);
+      } else {
+        //이미지 소스 설정
+
+        setImageSource(response.assets[0].uri);
+        console.log('이미지 소스가 설정되었습니다:', response.assets[0].uri);
+      }
+    });
+  };
+
+  const showCamera = (): void => {
+    launchCamera(options, response => {
+      if (response.error) {
+        console.log('LaunchCamera Error: ', response.error);
+      } else {
+        setImageSource(response.assets[0].uri);
+      }
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -151,11 +198,11 @@ const PictureListScreen = ({route}) => {
         numColumns={numColumns}
       />
       <Text style={styles.pictureCount}>{imageArr.length}장의 사진</Text>
-      <TouchableOpacity style={styles.camera} onPress={PictureCamera}>
+      <TouchableOpacity style={styles.camera} onPress={showCamera}>
         <AntIcon name="camera" size={25} color="#737373" />
         <Text>카메라로 촬영하기</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.gallery} onPress={pictureGallery}>
+      <TouchableOpacity style={styles.gallery} onPress={showImagePicker}>
         <MatIcon name="insert-photo" size={25} color="#737373" />
         <Text>앨범에서 가져오기</Text>
       </TouchableOpacity>
