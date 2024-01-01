@@ -70,14 +70,14 @@ const NewsListScreen = () => {
     }, []),
   );
 
-  const onSelect = (article: Article) => {
-    navigation.navigate('NewsDetail', {article: article, category: category});
-  };
-
   const onRefresh = () => {
     setRefreshing(true);
     fetchData();
     setRefreshing(false);
+  };
+
+  const onSelect = (article: Article) => {
+    navigation.navigate('NewsDetail', {article: article, category: category});
   };
 
   return (

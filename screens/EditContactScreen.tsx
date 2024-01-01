@@ -106,8 +106,8 @@ const EditContactScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={goBack}>
-          <IonIcon name="chevron-back" size={20} color="black" />
+        <TouchableOpacity onPress={goBack} style={styles.backBtn}>
+          <IonIcon name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
       </View>
       <ScrollView
@@ -188,6 +188,13 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   contentContainer: {

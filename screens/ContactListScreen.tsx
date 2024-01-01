@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     gap: 4,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 8,
   },
   searchText: {
     color: 'black',

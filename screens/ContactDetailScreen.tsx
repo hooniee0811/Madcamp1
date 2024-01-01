@@ -53,7 +53,7 @@ const ContactDetailScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        <TouchableOpacity onPress={goBack}>
+        <TouchableOpacity onPress={goBack} style={styles.backBtn}>
           <IonIcon name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
         <View style={styles.topBarRightContainer}>
@@ -147,6 +147,13 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   topBarRightContainer: {

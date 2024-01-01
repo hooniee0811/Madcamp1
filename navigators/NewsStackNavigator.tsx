@@ -3,12 +3,17 @@ import React from 'react';
 import NewsListScreen, {Article} from '../screens/NewsListScreen';
 import NewsDetailScreen from '../screens/NewsDetailScreen';
 import NewsCategoryTopTabNavigator from './NewsCategoryTopTabNavigator';
+import SearchedNewsScreen from '../screens/SearchedNewsScreen';
+import {NativeSyntheticEvent, TextInputChangeEventData} from 'react-native';
 
 export type NewsStackParamList = {
   NewsList: undefined;
   NewsDetail: {
     article: Article;
     category: string;
+  };
+  SearchedNewsList: {
+    searchTitle: string;
   };
 };
 
@@ -25,6 +30,11 @@ const NewsStackNavigator = () => {
       <Stack.Screen
         name="NewsDetail"
         component={NewsDetailScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="SearchedNewsList"
+        component={SearchedNewsScreen}
         options={{headerShown: false}}
       />
     </Stack.Navigator>
