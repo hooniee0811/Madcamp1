@@ -144,7 +144,7 @@ const ContactListScreen = () => {
             placeholderTextColor={'#C9C9C9'}
             value={searchTitle}
             onChange={onChagneSearchTitle}
-            multiline={true}
+            onSubmitEditing={() => {}}
           />
         </View>
       </View>
