@@ -52,7 +52,6 @@ const ContactListScreen = () => {
   }, []);
 
   useEffect(() => {
-    console.log(searchTitle);
     const searched = contacts
       .filter(contact => contact.name.includes(searchTitle))
       .sort((a, b) => {
@@ -61,8 +60,8 @@ const ContactListScreen = () => {
 
         return indexA - indexB;
       });
+
     setSearchedContacts(searched);
-    console.log(searchedContacts);
   }, [searchTitle]);
 
   const onChagneSearchTitle = (
@@ -115,7 +114,24 @@ const ContactListScreen = () => {
     }
   };
 
-  console.log(RNFS.DocumentDirectoryPath);
+  const renderColoredName = (name: string) => {
+    const index = name.indexOf(searchTitle);
+    const parts = name.split(searchTitle);
+
+    if (index !== -1) parts.splice(index, 0, searchTitle);
+
+    return parts.map((part, i) => {
+      return part === searchTitle ? (
+        <Text style={{color: '#5878E8'}} key={i}>
+          {searchTitle}
+        </Text>
+      ) : (
+        <Text style={{color: 'black'}} key={i}>
+          {part}
+        </Text>
+      );
+    });
+  };
 
   return (
     <View style={styles.container}>
@@ -171,7 +187,8 @@ const ContactListScreen = () => {
                         ? styles.nameTextWithLine
                         : styles.nameText
                     }>
-                    {searchedContact.name}
+                    {/* {searchedContact.name} */}
+                    {renderColoredName(searchedContact.name)}
                   </Text>
                 </TouchableOpacity>
               );

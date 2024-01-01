@@ -1,16 +1,16 @@
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import ContactsScreen from '../screens/ContactListScreen';
 import PictureScreen from '../screens/PictureScreen';
-import Tab3Screen from '../screens/Tab3Screen';
 import Icon from 'react-native-vector-icons/AntDesign';
+import FonIcon from 'react-native-vector-icons/FontAwesome';
 import {StyleSheet, Text, View} from 'react-native';
 import ContactsStackNavigator from './ContactsStackNavigator';
+import NewsStackNavigator from './NewsStackNavigator';
 
 export type BottomTabParamList = {
   Contacts: undefined;
   Pictures: undefined;
-  Tab3: undefined;
+  News: undefined;
 };
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
@@ -66,13 +66,13 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Tab3"
-        component={Tab3Screen}
+        name="News"
+        component={NewsStackNavigator}
         options={{
           tabBarIcon: ({size, focused}) => (
             <View style={focused ? styles.focusedContainer : styles.container}>
-              <Icon
-                name="question"
+              <FonIcon
+                name="newspaper-o"
                 size={24}
                 color={focused ? 'black' : '#616161'}
               />
@@ -80,7 +80,7 @@ const BottomTabNavigator = () => {
           ),
           tabBarLabel: ({focused}) => (
             <Text style={focused ? styles.focusedLabel : styles.label}>
-              Tab3
+              News
             </Text>
           ),
         }}
