@@ -7,6 +7,7 @@ import FeaIcon from 'react-native-vector-icons/Feather';
 import {ContactsStackParamList} from '../navigators/ContactsStackNavigator';
 import {useNavigation} from '@react-navigation/native';
 import {PictureStackParamList} from '../navigators/PictureStackNavigator';
+import Swiper from 'react-native-web-swiper';
 
 type Props = StackScreenProps<PictureStackParamList, 'PictureDetail'>;
 
@@ -47,6 +48,24 @@ const PictureDetailScreen = ({route}) => {
       );
     }
   };
+  const renderSwiper = () => {
+    const startIndex = route.params.imageArr.findIndex(
+      item => item.idx === route.params.idx,
+    );
+
+    return (
+      <Swiper controlsEnabled={true} from={startIndex}>
+        {route.params.imageArr.map((item, index) => (
+          <View key={item.idx}>
+            {/* 위에 숫자를 띄우지 않아도 괜찮겠다 */}
+            {/* {index === 0 && <View>{renderPictureNum()}</View>} */}
+
+            <Image source={item.src} style={styles.image} />
+          </View>
+        ))}
+      </Swiper>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -67,12 +86,7 @@ const PictureDetailScreen = ({route}) => {
           </TouchableOpacity>
         </View>
       </View>
-      <View>
-        <View>{renderPictureNum()}</View>
-      </View>
-      <ScrollView>
-        <Image source={route.params.src} style={styles.image} />
-      </ScrollView>
+      {renderSwiper()}
     </View>
   );
 };
