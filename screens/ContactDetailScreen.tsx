@@ -1,6 +1,14 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useState} from 'react';
-import {Alert, Modal, Pressable, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  Linking,
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {ScrollView, TouchableOpacity} from 'react-native-gesture-handler';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import FeaIcon from 'react-native-vector-icons/Feather';
@@ -8,7 +16,9 @@ import {ContactsStackParamList} from '../navigators/ContactsStackNavigator';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import FonIcon from 'react-native-vector-icons/FontAwesome';
 import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import EntIcon from 'react-native-vector-icons/Entypo';
 import RNFS from 'react-native-fs';
+import {Contact} from './ContactListScreen';
 
 type Props = StackScreenProps<ContactsStackParamList, 'ContactDetail'>;
 
@@ -50,6 +60,22 @@ const ContactDetailScreen = () => {
     navigation.popToTop();
   };
 
+  const openPhoneApp = (contact: Contact) => () => {
+    const phoneUrl = `tel:${contact.phoneNumber}`;
+
+    Linking.openURL(phoneUrl).catch(err =>
+      console.error('Error opening phone app:', err),
+    );
+  };
+
+  const openSMSApp = (contact: Contact) => () => {
+    const smsUrl = `sms:${contact.phoneNumber}`;
+
+    Linking.openURL(smsUrl).catch(err =>
+      console.error('Error opening phone app:', err),
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -71,6 +97,18 @@ const ContactDetailScreen = () => {
             <Text style={styles.firstName}>{contact.name[0]}</Text>
           </View>
           <Text style={styles.name}>{contact.name}</Text>
+          <View style={styles.linkBtnContainer}>
+            <TouchableOpacity
+              style={styles.phoneBtn}
+              onPress={openPhoneApp(contact)}>
+              <EntIcon name="phone" color="#5878E8" size={24} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.phoneBtn}
+              onPress={openSMSApp(contact)}>
+              <MatIcon name="message" color="#5878E8" size={24} />
+            </TouchableOpacity>
+          </View>
         </View>
         <View style={styles.contentContainer}>
           <Text style={styles.contentTitle}>Phone Number</Text>
@@ -163,8 +201,8 @@ const styles = StyleSheet.create({
   },
   nameContainer: {
     alignItems: 'center',
-    marginTop: 48,
-    marginBottom: 48,
+    marginTop: 36,
+    marginBottom: 24,
     gap: 8,
   },
   userIconContainer: {
@@ -197,6 +235,21 @@ const styles = StyleSheet.create({
     color: '#7A7A7A',
     fontWeight: '500',
     paddingLeft: 6,
+  },
+  linkBtnContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+    gap: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  phoneBtn: {
+    width: 60,
+    height: 60,
+    backgroundColor: '#F5F7FE',
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textContainer: {
     flexDirection: 'row',

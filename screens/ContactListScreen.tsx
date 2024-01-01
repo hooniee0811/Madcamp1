@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Linking,
   NativeSyntheticEvent,
   PermissionsAndroid,
   ScrollView,
@@ -13,7 +14,7 @@ import initialContactsData from '../src/contacts.json';
 import uuid from 'react-native-uuid';
 import {TextInput} from 'react-native-gesture-handler';
 import AntIcon from 'react-native-vector-icons/AntDesign';
-import FonIcon from 'react-native-vector-icons/FontAwesome';
+import EntIcon from 'react-native-vector-icons/Entypo';
 import {StackScreenProps} from '@react-navigation/stack';
 import {ContactsStackParamList} from '../navigators/ContactsStackNavigator';
 import {useNavigation} from '@react-navigation/native';
@@ -133,6 +134,14 @@ const ContactListScreen = () => {
     });
   };
 
+  const openPhoneApp = (contact: Contact) => () => {
+    const phoneUrl = `tel:${contact.phoneNumber}`;
+
+    Linking.openURL(phoneUrl).catch(err =>
+      console.error('Error opening phone app:', err),
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -159,14 +168,19 @@ const ContactListScreen = () => {
                   <View style={styles.userIconContainer}>
                     <Text style={styles.firstName}>{contact.name[0]}</Text>
                   </View>
-                  <Text
+                  <View
                     style={
                       index != contacts.length - 1
-                        ? styles.nameTextWithLine
-                        : styles.nameText
+                        ? styles.nameContainerWithLine
+                        : styles.nameContainer
                     }>
-                    {contact.name}
-                  </Text>
+                    <Text style={styles.nameText}>{contact.name}</Text>
+                    <TouchableOpacity
+                      style={styles.phoneBtn}
+                      onPress={openPhoneApp(contact)}>
+                      <EntIcon name="phone" color="#5878E8" size={24} />
+                    </TouchableOpacity>
+                  </View>
                 </TouchableOpacity>
               );
             })
@@ -181,15 +195,22 @@ const ContactListScreen = () => {
                       {searchedContact.name[0]}
                     </Text>
                   </View>
-                  <Text
+                  <View
                     style={
-                      index != searchedContacts.length - 1
-                        ? styles.nameTextWithLine
-                        : styles.nameText
+                      index != contacts.length - 1
+                        ? styles.nameContainerWithLine
+                        : styles.nameContainer
                     }>
-                    {/* {searchedContact.name} */}
-                    {renderColoredName(searchedContact.name)}
-                  </Text>
+                    <Text style={styles.nameText}>
+                      {/* {searchedContact.name} */}
+                      {renderColoredName(searchedContact.name)}
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.phoneBtn}
+                      onPress={openPhoneApp(searchedContact)}>
+                      <EntIcon name="phone" color="#5878E8" size={24} />
+                    </TouchableOpacity>
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -248,9 +269,9 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   userIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: '#F5F7FE',
     alignItems: 'center',
     justifyContent: 'center',
@@ -262,17 +283,20 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '800',
   },
-  nameTextWithLine: {
-    color: 'black',
-    fontFamily: 'Pretendard',
-    fontSize: 16,
-    fontWeight: '800',
+  nameContainerWithLine: {
+    flexDirection: 'row',
     flex: 1,
-    height: '100%',
-    textAlignVertical: 'center',
     borderBottomWidth: 0.5,
     borderBottomColor: '#C9C9C9',
-    paddingVertical: 16,
+    paddingVertical: 10,
+    justifyContent: 'space-between',
+  },
+  nameContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    paddingVertical: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   nameText: {
     color: 'black',
@@ -280,9 +304,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
     flex: 1,
-    height: '100%',
     textAlignVertical: 'center',
-    paddingVertical: 16,
+  },
+  phoneBtn: {
+    width: 40,
+    height: 40,
+    backgroundColor: '#F5F7FE',
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
