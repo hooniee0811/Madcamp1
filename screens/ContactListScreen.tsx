@@ -33,7 +33,6 @@ type Props = StackScreenProps<ContactsStackParamList, 'ContactList'>;
 
 const ContactListScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
-  const route = useNavigation<Props['route']>();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>('');
