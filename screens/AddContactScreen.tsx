@@ -3,6 +3,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import React, {useState} from 'react';
 import {
   Alert,
+  Image,
   NativeSyntheticEvent,
   StyleSheet,
   Text,
@@ -20,6 +21,8 @@ import MatIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import RNFS from 'react-native-fs';
 import GroupSelectModal from '../components/GroupSelectModal';
+import {launchImageLibrary} from 'react-native-image-picker';
+import ImageSelectModal from '../components/ImageSelectModal';
 
 type Props = StackScreenProps<ContactsStackParamList, 'AddContact'>;
 
@@ -34,8 +37,10 @@ const AddContactScreen = () => {
     group: 'None',
     email: '',
     memo: '',
+    image: {uri: ''},
   });
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
   const goBack = () => {
     navigation.goBack();
@@ -109,6 +114,22 @@ const AddContactScreen = () => {
       <ScrollView
         style={styles.contentContainer}
         contentContainerStyle={{alignItems: 'center', gap: 24}}>
+        <TouchableOpacity
+          style={styles.imageContainer}
+          onPress={() => {
+            setShowImageModal(!showImageModal);
+          }}>
+          {newContact.image.uri !== '' ? (
+            <>
+              <Image source={newContact.image} style={styles.image} />
+              <View style={styles.iconOnImage}>
+                <AntIcon name="camera" size={16} color="white" />
+              </View>
+            </>
+          ) : (
+            <AntIcon name="camera" size={25} color="#737373" />
+          )}
+        </TouchableOpacity>
         <View style={styles.textInputContainer}>
           <FonIcon name="user" color="#7A7A7A" size={24} />
           <TextInput
@@ -170,6 +191,12 @@ const AddContactScreen = () => {
         newContact={newContact}
         setNewContact={setNewContact}
       />
+      <ImageSelectModal
+        visible={showImageModal}
+        setVisible={setShowImageModal}
+        newContact={newContact}
+        setNewContact={setNewContact}
+      />
     </View>
   );
 };
@@ -194,6 +221,31 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 32,
+  },
+  imageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F5F7FE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 32,
+  },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
+  iconOnImage: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#5878E8',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   textInputContainer: {
     flexDirection: 'row',

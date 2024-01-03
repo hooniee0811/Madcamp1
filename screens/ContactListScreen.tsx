@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+  Image,
   Linking,
   NativeSyntheticEvent,
   PermissionsAndroid,
@@ -27,6 +28,7 @@ export type Contact = {
   group: string;
   email: string;
   memo: string;
+  image: {uri: string | undefined};
 };
 
 type Props = StackScreenProps<ContactsStackParamList, 'ContactList'>;
@@ -108,6 +110,7 @@ const ContactListScreen = () => {
 
       const fileContent = await RNFS.readFile(filePath, 'utf8');
       const contactData = JSON.parse(fileContent);
+      console.log(contactData);
       setContacts(contactData);
     } catch (error) {
       console.log(error);
@@ -164,9 +167,13 @@ const ContactListScreen = () => {
                   key={index}
                   style={styles.contactContainer}
                   onPress={showContactDetail(index)}>
-                  <View style={styles.userIconContainer}>
-                    <Text style={styles.firstName}>{contact.name[0]}</Text>
-                  </View>
+                  {contact.image.uri !== '' ? (
+                    <Image source={contact.image} style={styles.image} />
+                  ) : (
+                    <View style={styles.userIconContainer}>
+                      <Text style={styles.firstName}>{contact.name[0]}</Text>
+                    </View>
+                  )}
                   <View
                     style={
                       index != contacts.length - 1
@@ -266,6 +273,11 @@ const styles = StyleSheet.create({
     gap: 12,
     alignItems: 'center',
     zIndex: 1,
+  },
+  image: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   userIconContainer: {
     width: 44,

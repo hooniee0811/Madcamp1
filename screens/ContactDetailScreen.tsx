@@ -2,6 +2,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import React, {useState} from 'react';
 import {
   Alert,
+  Image,
   Linking,
   Modal,
   Pressable,
@@ -39,6 +40,25 @@ const ContactDetailScreen = () => {
       setContacts: route.params.setContacts,
       index: route.params.index,
     });
+  };
+
+  const onPressDelete = () => {
+    Alert.alert(
+      '삭제하시겠습니까?',
+      '',
+      [
+        {
+          text: '아니요',
+          onPress: () => console.log('취소되었습니다.'),
+          style: 'cancel',
+        },
+        {
+          text: '네',
+          onPress: () => deleteContact(),
+        },
+      ],
+      {cancelable: true},
+    );
   };
 
   const deleteContact = () => {
@@ -86,16 +106,20 @@ const ContactDetailScreen = () => {
           <TouchableOpacity onPress={editContact}>
             <FeaIcon name="edit" size={20} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setModalVisible(true)}>
+          <TouchableOpacity onPress={onPressDelete}>
             <FeaIcon name="trash-2" size={20} color="black" />
           </TouchableOpacity>
         </View>
       </View>
       <ScrollView contentContainerStyle={{alignItems: 'center', gap: 24}}>
         <View style={styles.nameContainer}>
-          <View style={styles.userIconContainer}>
-            <Text style={styles.firstName}>{contact.name[0]}</Text>
-          </View>
+          {contact.image.uri !== '' ? (
+            <Image source={contact.image} style={styles.image} />
+          ) : (
+            <View style={styles.userIconContainer}>
+              <Text style={styles.firstName}>{contact.name[0]}</Text>
+            </View>
+          )}
           <Text style={styles.name}>{contact.name}</Text>
           <View style={styles.linkBtnContainer}>
             <TouchableOpacity
@@ -145,7 +169,7 @@ const ContactDetailScreen = () => {
           </View>
         )}
       </ScrollView>
-      <Modal
+      {/* <Modal
         visible={modalVisible}
         animationType="fade"
         transparent={true}
@@ -170,7 +194,7 @@ const ContactDetailScreen = () => {
             </Pressable>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </View>
   );
 };
@@ -205,10 +229,15 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     gap: 8,
   },
+  image: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+  },
   userIconContainer: {
     width: 64,
     height: 64,
-    borderRadius: 30,
+    borderRadius: 32,
     backgroundColor: '#F5F7FE',
     alignItems: 'center',
     justifyContent: 'center',

@@ -179,13 +179,13 @@ const PictureListScreen = () => {
     );
   };
 
-  const options = {
-    storageOptions: {
-      skipBackup: true,
-      path: 'images',
-    },
-  };
   const showImagePicker = (): void => {
+    const options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
     launchImageLibrary(options, response => {
       console.log('Response = ', response);
 
@@ -209,6 +209,12 @@ const PictureListScreen = () => {
   };
 
   const showCamera = (): void => {
+    const options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
     launchCamera(options, response => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
