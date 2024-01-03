@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useEffect, useState} from 'react';
+import React, {FC, useEffect, useState} from 'react';
 import {
   Alert,
   Image,
@@ -10,91 +10,86 @@ import {
   TouchableOpacity,
   View,
   Platform,
+  Dimensions,
+  Modal,
+  Pressable,
 } from 'react-native';
 ``;
 import {FlatList} from 'react-native-gesture-handler';
 import {PictureStackParamList} from '../navigators/PictureStackNavigator';
-import picturesData from '../src/pictures.json';
 import AntIcon from 'react-native-vector-icons/AntDesign';
 import FonIcon from 'react-native-vector-icons/Fontisto';
 import FonAweIcon from 'react-native-vector-icons/FontAwesome';
 import EntIcon from 'react-native-vector-icons/Entypo';
 import MatIcon from 'react-native-vector-icons/MaterialIcons';
 
-import RNFS from 'react-native-fs'; // react-native-fs 라이브러리 추가
+import RNFS from 'react-native-fs';
 import {writeFile, DocumentDirectoryPath} from 'react-native-fs';
-import {CameraRoll} from '@react-native-camera-roll/camera-roll';
-import {openCamera} from './PictureCameraScreen';
 import ImagePicker, {
   launchImageLibrary,
   launchCamera,
 } from 'react-native-image-picker';
-// type Props = StackPictureProps<PictureStackParamList, 'PictureList'>;
+import {StackScreenProps} from '@react-navigation/stack';
+type Props = StackScreenProps<PictureStackParamList, 'PictureList'>;
 
-type PictureListProps = {
-  route: any;
+export type imageArr = {
+  idx: number;
+  src: {uri: string | undefined};
+  heart: boolean;
 };
 
-const PictureListScreen = ({route}) => {
+const PictureListScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
 
-  const [containerWidth, setContainerWidth] = useState(0);
+  const [imageArr, setImageArr] = useState<imageArr[]>([]);
+  const [writefile, setWritefile] = useState<boolean>(false);
 
-  const [imageArr, setImageArr] = useState([
-    {idx: '1', src: require('../assets/img1.png')},
-    {idx: '2', src: require('../assets/img2.png')},
-    {idx: '3', src: require('../assets/img3.png')},
-    {idx: '4', src: require('../assets/img4.png')},
-    {idx: '5', src: require('../assets/img5.png')},
-  ]);
+  const filePath = RNFS.DownloadDirectoryPath + '/images.json';
+
+  const readImages = async () => {
+    try {
+      if (!(await RNFS.exists(filePath))) {
+        await RNFS.writeFile(filePath, JSON.stringify([]), 'utf8');
+      }
+      const fileContent = await RNFS.readFile(filePath, 'utf8');
+      setImageArr(JSON.parse(fileContent));
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
-    // route에서 selectedImage를 가져와서 이미지 배열에 추가
-    const selectedImage = route.params?.selectedImage;
-    if (selectedImage) {
-      // 이미지를 로컬 파일로 저장
-      const saveImageToLocalFile = async () => {
-        try {
-          const imagePath = `${DocumentDirectoryPath}/${Date.now()}.jpg`;
+    readImages();
+  }, []);
 
-          // 이미지를 로컬 파일로 저장
-          await RNFS.moveFile(selectedImage, imagePath);
+  useEffect(() => {
+    console.log(writefile);
+    if (writefile)
+      RNFS.writeFile(filePath, JSON.stringify(imageArr), 'utf8')
+        .then(success => {
+          console.log('File written successfully');
+        })
+        .catch(error => {
+          console.log('error');
+        });
+    setWritefile(true);
+  }, [imageArr.length]);
 
-          // 이미지 배열을 복제하여 업데이트
-          setImageArr(prevImageArr => [
-            ...prevImageArr,
-            {idx: String(prevImageArr.length + 1), src: imagePath},
-          ]);
+  const [showHeart, setShowHeart] = useState(false);
+  const [showButton, setShowButton] = useState(false);
 
-          console.log('이미지가 로컬 파일로 저장되었습니다:', imagePath); //이미지가 로컬 파일로 저장되었습니다: /data/user/0/com.madcamp1/files/1704073823245.jpg
-        } catch (error) {
-          console.error('이미지 저장 실패:', error);
-        }
-      };
-
-      saveImageToLocalFile();
-    }
-  }, [route.params?.selectedImage]);
-
-  const margin = 0; // 비율에 맞도록 수정하기
-  // const margin = styles.imageThumbnailContainer.margin * 2;
   const numColumns = 3;
+  const containerWidth = Dimensions.get('window').width;
+  const margin = containerWidth * 0.04;
   const thumbnailSize = (containerWidth - margin) / numColumns;
-  //pictureGalleryScreen으로 이동
-  const pictureGallery = () => {
-    navigation.navigate('PictureGallery');
-  };
-  //pictureCameraScreen으로 이동
-  const PictureCamera = () => {
-    navigation.navigate('PictureCamera');
+
+  const removeImage = (idxToRemove: number) => {
+    const cp = [...imageArr];
+    cp.splice(idxToRemove, 1);
+    setImageArr(cp);
   };
 
-  const removeImage = idxToRemove => {
-    const updatedImageArr = imageArr.filter(item => item.idx !== idxToRemove);
-    setImageArr(updatedImageArr);
-  };
-
-  const longPressButton = idx => {
+  const longPressButton = (idx: number) => {
     Alert.alert(
       '삭제하시겠습니까?',
       '',
@@ -112,20 +107,19 @@ const PictureListScreen = ({route}) => {
       {cancelable: true},
     );
   };
-  const Item = ({item}) => {
+  const Item = ({item, index}) => {
     return (
       <TouchableHighlight
         key={item.idx}
         onPress={() =>
           navigation.navigate('PictureDetail', {
-            src: item.src,
-            count: imageArr.length,
-            idx: item.idx,
+            index: index,
             imageArr: imageArr,
+            setImageArr: setImageArr,
             removeImage: removeImage,
           })
         }
-        onLongPress={() => longPressButton(item.idx)} //길게 누르면 삭제
+        onLongPress={() => longPressButton(index)} //길게 누르면 삭제
       >
         <View style={styles.imageThumbnailContainer}>
           <Image
@@ -138,12 +132,15 @@ const PictureListScreen = ({route}) => {
             ]}
             source={item.src}
           />
+          <View style={styles.eachHeart}>
+            {item.heart && (
+              <AntIcon name="heart" size={20} color={'#D00B00'}></AntIcon>
+            )}
+          </View>
         </View>
       </TouchableHighlight>
     );
   };
-  //갤러리 접근 및 사진 촬영
-  const [imageSource, setImageSource] = useState<string>('');
 
   const options = {
     storageOptions: {
@@ -157,87 +154,117 @@ const PictureListScreen = ({route}) => {
 
       if (response.didCancel) {
         console.log('User cancelled image picker');
-      } else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        Alert.alert(response.customButton);
       } else {
+        console.log('Response = ', response);
         //이미지 배열에 추가
-        setImageArr(prevImageArr => [
-          ...prevImageArr,
-          {
-            idx: String(prevImageArr.length + 1),
+        const cp = [...imageArr];
+        if (response.assets) {
+          cp.push({
+            idx: cp.length + 1,
             src: {uri: response.assets[0].uri},
-          },
-        ]);
-        //imageArr 출력하기. 이거 적으니까 됨;; 왜지
-        console.log(imageArr[0]);
-
-        //이미지 소스 설정
-        setImageSource(response.assets[0].uri);
-        console.log('이미지 소스가 설정되었습니다:', response.assets[0].uri);
+            heart: false,
+          });
+        }
+        setImageArr(cp);
       }
     });
+    setShowButton(false);
   };
 
   const showCamera = (): void => {
     launchCamera(options, response => {
-      if (response.error) {
-        console.log('LaunchCamera Error: ', response.error);
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
       } else {
+        console.log('Response = ', response);
         //이미지 배열에 추가
-        setImageArr(prevImageArr => [
-          ...prevImageArr,
-          {
-            idx: String(prevImageArr.length + 1),
+        const cp = [...imageArr];
+        if (response.assets) {
+          cp.push({
+            idx: cp.length + 1,
             src: {uri: response.assets[0].uri},
-          },
-        ]);
-        //imageArr 출력하기. 이거 적으니까 됨;; 왜지
-        console.log(imageArr[1]);
-        //이미지 소스 설정
-        setImageSource(response.assets[0].uri);
+            heart: false,
+          });
+        }
+        setImageArr(cp);
       }
     });
+    setShowButton(false);
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.top}>
+        <View style={{width: 20}}></View>
+        <Text style={styles.pictureCount}>{imageArr.length}장의 사진</Text>
+        <TouchableOpacity
+          onPress={() => {
+            setShowButton(!showButton);
+          }}>
+          <EntIcon name="dots-three-vertical" size={20} color="black"></EntIcon>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
-        keyExtractor={item => item.idx}
-        data={imageArr}
+        data={
+          showHeart ? imageArr.filter(item => item.heart === true) : imageArr
+        }
         style={styles.imageArr}
-        onLayout={e => setContainerWidth(e.nativeEvent.layout.width)}
-        renderItem={({item}) => <Item item={item} />}
+        renderItem={({item, index}) => {
+          return <Item item={item} index={index} key={item.idx} />;
+        }}
         numColumns={numColumns}
+        ListFooterComponent={<View style={{height: 100}}></View>}
       />
-      <Text style={styles.pictureCount}>{imageArr.length}장의 사진</Text>
-      <TouchableOpacity style={styles.camera} onPress={showCamera}>
-        <AntIcon name="camera" size={25} color="#737373" />
-        <Text>카메라로 촬영하기</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.gallery} onPress={showImagePicker}>
-        <MatIcon name="insert-photo" size={25} color="#737373" />
-        <Text>앨범에서 가져오기</Text>
-      </TouchableOpacity>
+
+      <Modal
+        visible={showButton}
+        animationType="fade"
+        transparent={true}
+        onRequestClose={() => setShowButton(false)}>
+        <Pressable
+          style={{flex: 1, backgroundColor: 'rgba(97,97,97, 0.70)'}}
+          onPress={() => setShowButton(false)}
+        />
+        <View style={styles.footer}>
+          <View style={styles.buttons}>
+            <TouchableOpacity style={styles.camera} onPress={showCamera}>
+              <AntIcon name="camera" size={25} color="#737373" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.gallery} onPress={showImagePicker}>
+              <MatIcon name="insert-photo" size={25} color="#737373" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setShowHeart(!showHeart);
+                setShowButton(false);
+              }}
+              style={styles.heartButton}>
+              {showHeart ? (
+                <AntIcon name="heart" size={25} color={'#D00B00'}></AntIcon>
+              ) : (
+                <AntIcon name="hearto" size={25} color={'#595959'}></AntIcon>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     flexDirection: 'column',
+    paddingHorizontal: 0,
     backgroundColor: '#ffffff',
   },
   imageArr: {
-    width: '100%',
-    marginVertical: '5%',
+    flex: 1,
+    zIndex: 1,
+    paddingHorizontal: 2,
   },
   imageThumbnailContainer: {
-    flex: 1,
     justifyContent: 'center',
     flexDirection: 'column',
     margin: 2,
@@ -250,35 +277,66 @@ const styles = StyleSheet.create({
   },
   gallery: {
     flexDirection: 'row',
-    position: 'absolute',
-    height: 60,
-    width: '45%',
-    right: 16,
-    bottom: 20,
+    height: 70,
+    width: 70,
     backgroundColor: '#F5F7FE',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
+    justifyContent: 'center',
+
     elevation: 1,
-    borderRadius: 10,
+    borderRadius: 35,
   },
   camera: {
     flexDirection: 'row',
-    position: 'absolute',
-    height: 60,
-    width: '45%',
-    left: 16,
-    bottom: 20,
+    height: 70,
+    width: 70,
     backgroundColor: '#F5F7FE',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 20,
+    justifyContent: 'center',
     elevation: 1,
-    borderRadius: 10,
+    borderRadius: 35,
   },
   pictureCount: {
-    marginBottom: 90,
-    color: '#737373',
+    color: '#000000',
+    // justifyContent: 'center',
+    // alignSelf: 'center',
+    marginTop: 5,
+    marginBottom: 5,
+  },
+  footer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    bottom: '50%',
+    transform: [{translateY: 35}],
+    width: '100%',
+    zIndex: 2,
+    height: 70,
+  },
+  buttons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+  },
+  top: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  heartButton: {
+    flexDirection: 'row',
+    height: 70,
+    width: 70,
+    backgroundColor: '#F5F7FE',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 1,
+    borderRadius: 35,
+  },
+  eachHeart: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
   },
 });
 
