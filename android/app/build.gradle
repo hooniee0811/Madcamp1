@@ -80,6 +80,11 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        //오류 때문에 추가
+        // missingDimensionStrategy 'react-native-camera', 'general' 
+        //react-native camera
+          missingDimensionStrategy 'react-native-camera', 'mlkit' 
+
     }
     signingConfigs {
         debug {
@@ -120,6 +125,8 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+    //react-native camera
+    implementation project(':react-native-camera')
 }
 
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

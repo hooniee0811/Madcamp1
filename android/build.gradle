@@ -13,9 +13,18 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        //오류 때문에 추가  
+        maven { url "https://jitpack.io" } 
+        maven { url "https://maven.google.com" } 
     }
     dependencies {
-        classpath("com.android.tools.build:gradle")
+        // classpath("com.android.tools.build:gradle") 오류때문에 아래 코드로 바꿈
+        classpath("com.android.tools.build:gradle:2.7.5")
+        
+
         classpath("com.facebook.react:react-native-gradle-plugin")
+
+        //react-native camera
+          classpath 'com.google.android.gms:strict-version-matcher-plugin:1.2.1'
     }
 }

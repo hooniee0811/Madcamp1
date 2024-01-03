@@ -11,8 +11,6 @@ type Props = {
 };
 
 const NewsItem: FC<Props> = ({title, publishedAt, imageUrl, onSelect}) => {
-  console.log(publishedAt);
-
   const removeExceptTitle = (title: string) => {
     let index = title.indexOf('/');
     if (index !== -1) {

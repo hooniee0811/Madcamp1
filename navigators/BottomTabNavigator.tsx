@@ -5,6 +5,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import FonIcon from 'react-native-vector-icons/FontAwesome';
 import {StyleSheet, Text, View} from 'react-native';
 import ContactsStackNavigator from './ContactsStackNavigator';
+import PictureStackNavigator from './PictureStackNavigator';
 import NewsStackNavigator from './NewsStackNavigator';
 
 export type BottomTabParamList = {
@@ -47,7 +48,7 @@ const BottomTabNavigator = () => {
       />
       <Tab.Screen
         name="Pictures"
-        component={PictureScreen}
+        component={PictureStackNavigator}
         options={{
           tabBarIcon: ({size, focused}) => (
             <View style={focused ? styles.focusedContainer : styles.container}>

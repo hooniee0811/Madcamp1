@@ -1,5 +1,5 @@
 package com.madcamp1;
-
+import com.imagepicker.ImagePickerPackage; //이미지 가져오는 것 때문에 추가
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;

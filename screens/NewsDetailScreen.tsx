@@ -30,7 +30,6 @@ const NewsDetailScreen = () => {
   const navigation = useNavigation<Props['navigation']>();
   const article = route.params.article;
   const category = route.params.category;
-  console.log(category);
 
   const onOpenLink = () => {
     Linking.openURL(article.url);

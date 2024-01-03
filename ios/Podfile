@@ -44,10 +44,13 @@ target 'Madcamp1' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
+  # pod 'React', :path => '../node_modules/react-native', :subspecs => ['Core', 'CxxBridge', 'DevSupport', 'RCTText', 'RCTNetwork', 'RCTWebSocket', 'RCTAnimation', 'RCTImage', 'RCTLinking', 'RCTSettings', 'RCTGeolocation', 'RCTBlob']
+  # pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
   target 'Madcamp1Tests' do
     inherit! :complete
     # Pods for testing
+
+  
   end
 
   post_install do |installer|

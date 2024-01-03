@@ -42,8 +42,6 @@ const SearchedNewsScreen = () => {
       },
     );
     const data = await response.json();
-    console.log('----------------------------');
-    console.log(data.articles);
     setArticles(data.articles);
   }
 
@@ -77,7 +75,6 @@ const SearchedNewsScreen = () => {
     navigation.navigate('NewsDetail', {article: article, category: ''});
   };
 
-  console.log(route.params.searchTitle);
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>

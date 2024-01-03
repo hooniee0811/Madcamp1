@@ -75,8 +75,6 @@ const EditContactScreen = () => {
     setNewContact(cp);
   };
 
-  console.log(RNFS.DocumentDirectoryPath + '/contacts.json');
-
   const saveContact = () => {
     const cp = [...route.params.contacts];
     const filePath = RNFS.DocumentDirectoryPath + '/contacts.json';

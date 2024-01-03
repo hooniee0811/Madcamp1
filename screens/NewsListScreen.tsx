@@ -58,8 +58,6 @@ const NewsListScreen = () => {
       },
     );
     const data = await response.json();
-    console.log('----------------------------');
-    // console.log(data.articles);
     setArticles(data.articles);
     // setRefreshing(false);
   }
